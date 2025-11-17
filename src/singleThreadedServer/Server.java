@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class Server{
+
+    public static final Logger logger = Logger.getLogger(singleThreadedServer.Server.class.getName());
 
     public void run() throws IOException {
 
@@ -15,19 +18,20 @@ public class Server{
         ServerSocket serverSocket = new ServerSocket(port);
 
         serverSocket.setSoTimeout(10000);
-
+        System.out.println("Server is listening on port: " + port);
         while(true){
             try{
-                System.out.println("Server is listening on port: " + port);
+
                 Socket acceptedConnection = serverSocket.accept();
-                System.out.println("Server is connected to client : " + acceptedConnection.getRemoteSocketAddress());
+                logger.info("Server is connected to client : " + acceptedConnection.getRemoteSocketAddress());
                 PrintWriter toClient = new PrintWriter(acceptedConnection.getOutputStream(),true);
                 BufferedReader fromClient = new BufferedReader(new InputStreamReader(acceptedConnection.getInputStream()));
                 toClient.println("Hello from Server");
                 toClient.flush();
 
+                logger.info("Waiting for client message...");
                 String clientMsg = fromClient.readLine();   // read from client
-                System.out.println("Client said: " + clientMsg);
+                logger.info("Client said: " + clientMsg);
 
                 acceptedConnection.close();
             }catch(Exception ex){
